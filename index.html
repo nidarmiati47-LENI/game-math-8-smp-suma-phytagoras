@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Interaktif Teorema Pythagoras - Kelas 8 SMP</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col justify-between">
+
+  <!-- Header PID / Sekolah -->
+  <header class="bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="p-2.5 bg-white/20 rounded-xl backdrop-blur-md">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-tight">Kuis Matematika: Teorema Pythagoras</h1>
+          <p class="text-xs sm:text-sm text-cyan-100 font-medium">Penerapan Teorema Pythagoras dalam Kehidupan Sehari-hari — Kelas VIII SMP</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="bg-white/20 px-3 py-1.5 rounded-full text-xs font-semibold text-white backdrop-blur-sm border border-white/30">
+          PID Interactive Mode
+        </span>
+        <button onclick="toggleFullscreen()" class="bg-cyan-700/50 hover:bg-cyan-700 p-2 rounded-lg text-white transition text-xs flex items-center gap-1 font-medium border border-cyan-400/30">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4"></path></svg>
+          Layar Penuh
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Container Utama -->
+  <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex-grow w-full">
+    
+    <!-- Tampilan Kuis Aktif -->
+    <div id="quiz-view" class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      
+      <!-- Panel Soal Utama (3 kolom) -->
+      <div class="lg:col-span-3 space-y-6">
+        
+        <!-- Status Bar Soal -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-3">
+          <div class="flex items-center space-x-2">
+            <span class="text-sm font-semibold text-slate-500">Soal ke:</span>
+            <span id="current-q-num" class="text-lg font-bold text-teal-600 bg-teal-50 px-3 py-1 rounded-lg border border-teal-200">1</span>
+            <span class="text-sm font-medium text-slate-400">/ 10</span>
+          </div>
+          
+          <!-- Progress Bar -->
+          <div class="flex-grow max-w-xs mx-2">
+            <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+              <div id="progress-bar" class="bg-teal-500 h-2.5 rounded-full transition-all duration-300" style="width: 10%"></div>
+            </div>
+          </div>
+
+          <div class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
+            Terjawab: <span id="answered-count">0</span>/10
+          </div>
+        </div>
+
+        <!-- Kartu Soal -->
+        <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-slate-200 space-y-6 relative">
+          <div class="flex items-center justify-between">
+            <span id="q-category" class="bg-cyan-100 text-cyan-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+              Penerapan Sehari-hari
+            </span>
+            <span class="text-xs text-slate-400 font-medium">Pilihan Ganda</span>
+          </div>
+
+          <!-- Teks Soal -->
+          <h2 id="question-text" class="text-lg sm:text-xl font-bold text-slate-800 leading-relaxed min-h-[60px]">
+            Memuat pertanyaan...
+          </h2>
+
+          <!-- Pilihan Jawaban -->
+          <div id="options-container" class="grid grid-cols-1 gap-3.5 pt-2">
+            <!-- Options dynamically loaded here -->
+          </div>
+
+          <!-- Navigasi Bawah -->
+          <div class="flex justify-between items-center pt-6 border-t border-slate-100">
+            <button id="prev-btn" onclick="prevQuestion()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition text-sm flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              Sebelumnya
+            </button>
+            
+            <button id="next-btn" onclick="nextQuestion()" class="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl shadow-md shadow-teal-600/30 transition text-sm flex items-center gap-2">
+              Berikutnya
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel Palet Soal & Kontrol (1 kolom) -->
+      <div class="space-y-6">
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+          <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
+            <svg class="w-4 h-4 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+            Navigasi Nomor Soal
+          </h3>
+          <div id="question-palette" class="grid grid-cols-5 gap-2">
+            <!-- Palette buttons generated dynamically -->
+          </div>
+          
+          <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 text-xs">
+            <div class="flex items-center gap-2 text-slate-600">
+              <span class="w-3 h-3 bg-teal-500 rounded-sm"></span> Sedang Dibuka
+            </div>
+            <div class="flex items-center gap-2 text-slate-600">
+              <span class="w-3 h-3 bg-emerald-500 rounded-sm"></span> Sudah Dijawab
+            </div>
+            <div class="flex items-center gap-2 text-slate-600">
+              <span class="w-3 h-3 bg-slate-200 rounded-sm"></span> Belum Dijawab
+            </div>
+          </div>
+        </div>
+
+        <button onclick="confirmSubmit()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2 text-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          Selesaikan & Kirim Jawaban
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Tampilan Hasil Kuis -->
+    <div id="result-view" class="hidden space-y-8">
+      
+      <!-- Ringkasan Nilai -->
+      <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-200 text-center relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-40 h-40 bg-teal-100 rounded-full blur-2xl"></div>
+        <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-cyan-100 rounded-full blur-2xl"></div>
+
+        <div class="relative z-10 space-y-4 max-w-xl mx-auto">
+          <span id="score-badge" class="inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase">
+            Hasil Evaluasi
+          </span>
+
+          <h2 class="text-3xl font-extrabold text-slate-800">Hasil Pembelajaran Anda</h2>
+          
+          <div class="my-6">
+            <div id="score-circle" class="w-36 h-36 mx-auto rounded-full bg-gradient-to-tr from-teal-600 to-cyan-500 text-white flex flex-col justify-center items-center shadow-lg shadow-teal-500/30 border-4 border-white">
+              <span id="score-val" class="text-4xl font-extrabold">0</span>
+              <span class="text-xs uppercase tracking-widest font-medium opacity-90">Nilai Akhir</span>
+            </div>
+          </div>
+
+          <p id="feedback-text" class="text-base text-slate-600 font-medium">
+            Memuat umpan balik...
+          </p>
+
+          <div class="grid grid-cols-3 gap-4 pt-4 border-t border-slate-100 text-center">
+            <div class="p-3 bg-slate-50 rounded-xl">
+              <p class="text-xs text-slate-400 font-semibold">Benar</p>
+              <p id="correct-count" class="text-xl font-bold text-emerald-600">0</p>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-xl">
+              <p class="text-xs text-slate-400 font-semibold">Salah</p>
+              <p id="wrong-count" class="text-xl font-bold text-rose-600">0</p>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-xl">
+              <p class="text-xs text-slate-400 font-semibold">Akurasi</p>
+              <p id="accuracy-rate" class="text-xl font-bold text-teal-600">0%</p>
+            </div>
+          </div>
+
+          <div class="pt-4 flex flex-wrap justify-center gap-3">
+            <button onclick="restartQuiz()" class="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-md transition text-sm flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+              Ulangi Kuis
+            </button>
+            <button onclick="scrollToReview()" class="px-6 py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow-md transition text-sm flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              Lihat Pembahasan Lengkap
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pembahasan Soal Lengkap -->
+      <div id="review-section" class="space-y-6">
+        <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+          <svg class="w-6 h-6 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+          Pembahasan Detail 10 Soal Matematika
+        </h3>
+        
+        <div id="review-cards-container" class="space-y-4">
+          <!-- Review items injected here -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer PID -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-4">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+      <p>© Aplikasi Pembelajaran Interaktif Papan Informasi Digital (PID) — Matematika Kelas 8 SMP</p>
+      <p class="mt-1 text-slate-400">Materi: Penerapan Teorema Pythagoras dalam Kehidupan Sehari-hari</p>
+    </div>
+  </footer>
+
+  <!-- Script Logika Kuis -->
+  <script>
+    // Data Soal 10 Pilihan Ganda Teorema Pythagoras Kelas 8 SMP
+    const quizData = [
+      {
+        id: 1,
+        category: "Tangga pada Dinding",
+        question: "Sebuah tangga sepanjang 10 meter disandarkan pada dinding tembok untuk perbaikan perpipaan. Jarak antara ujung bawah tangga dengan dasar dinding adalah 6 meter. Berapakah tinggi dinding yang dicapai oleh ujung atas tangga tersebut?",
+        options: [
+          { key: "A", text: "7 meter", isCorrect: false },
+          { key: "B", text: "8 meter", isCorrect: true },
+          { key: "C", text: "9 meter", isCorrect: false },
+          { key: "D", text: "12 meter", isCorrect: false }
+        ],
+        explanation: "Konfigurasi tangga, dinding, dan lantai membentuk segitiga siku-siku. Panjang tangga adalah sisi miring (c = 10 m), alas (a = 6 m). Maka tinggi dinding b = √(c² - a²) = √(10² - 6²) = √(100 - 36) = √64 = 8 meter."
+      },
+      {
+        id: 2,
+        category: "Pelayaran Kapal",
+        question: "Sebuah kapal berlayar dari Pelabuhan A ke arah Utara sejauh 12 km, kemudian berbelok ke arah Timur sejauh 9 km menuju Pelabuhan B. Berapakah jarak terdekat (jarak garis lurus) dari Pelabuhan A ke Pelabuhan B?",
+        options: [
+          { key: "A", text: "13 km", isCorrect: false },
+          { key: "B", text: "15 km", isCorrect: true },
+          { key: "C", text: "18 km", isCorrect: false },
+          { key: "D", text: "21 km", isCorrect: false }
+        ],
+        explanation: "Arah Utara dan Timur membentuk sudut tegak lurus (90°). Jarak terdekat (sisi miring c) = √(12² + 9²) = √(144 + 81) = √225 = 15 km."
+      },
+      {
+        id: 3,
+        category: "Permainan Layang-Layang",
+        question: "Budi sedang bermain layang-layang di lapangan. Panjang benang yang diulurkan adalah 15 meter. Jarak posisi Budi berdiri secara mendatar di tanah ke titik tepat di bawah layang-layang adalah 9 meter. Berapakah tinggi layang-layang tersebut dari tanah?",
+        options: [
+          { key: "A", text: "10 meter", isCorrect: false },
+          { key: "B", text: "11 meter", isCorrect: false },
+          { key: "C", text: "12 meter", isCorrect: true },
+          { key: "D", text: "14 meter", isCorrect: false }
+        ],
+        explanation: "Panjang benang merupakan sisi miring (c = 15 m) dan jarak mendatar (a = 9 m). Tinggi layang-layang t = √(15² - 9²) = √(225 - 81) = √144 = 12 meter."
+      },
+      {
+        id: 4,
+        category: "Ukuran Layar Televisi",
+        question: "Sebuah layar televisi berbentuk persegi panjang memiliki ukuran panjang 40 cm dan lebar 30 cm. Berapakah panjang garis diagonal layar televisi tersebut?",
+        options: [
+          { key: "A", text: "45 cm", isCorrect: false },
+          { key: "B", text: "50 cm", isCorrect: true },
+          { key: "C", text: "60 cm", isCorrect: false },
+          { key: "D", text: "70 cm", isCorrect: false }
+        ],
+        explanation: "Diagonal layar membagi persegi panjang menjadi segitiga siku-siku dengan alas 40 cm dan tinggi 30 cm. Diagonal d = √(40² + 30²) = √(1600 + 900) = √2500 = 50 cm."
+      },
+      {
+        id: 5,
+        category: "Kawat Penyangga Tiang",
+        question: "Sebuah tiang bendera setinggi 24 meter akan dipasangi kawat penyangga dari puncak tiang ke patok di tanah. Jika jarak patok di tanah ke dasar tiang bendera adalah 7 meter, berapakah panjang kawat penyangga yang dibutuhkan?",
+        options: [
+          { key: "A", text: "25 meter", isCorrect: true },
+          { key: "B", text: "26 meter", isCorrect: false },
+          { key: "C", text: "28 meter", isCorrect: false },
+          { key: "D", text: "31 meter", isCorrect: false }
+        ],
+        explanation: "Kawat penyangga merupakan hipotenusa (sisi miring). Panjang kawat = √(24² + 7²) = √(576 + 49) = √625 = 25 meter."
+      },
+      {
+        id: 6,
+        category: "Jarak Antar Kendaraan",
+        question: "Dua sepeda motor berangkat bersamaan dari suatu persimpangan jalan tegak lurus. Motor A melaju ke arah Selatan sejauh 16 km, sedangkan Motor B melaju ke arah Barat sejauh 12 km. Berapakah jarak lurus antara Motor A dan Motor B pada posisi tersebut?",
+        options: [
+          { key: "A", text: "18 km", isCorrect: false },
+          { key: "B", text: "20 km", isCorrect: true },
+          { key: "C", text: "24 km", isCorrect: false },
+          { key: "D", text: "28 km", isCorrect: false }
+        ],
+        explanation: "Lintasan kedua motor membentuk sudut siku-siku 90°. Jarak lurus antar motor = √(16² + 12²) = √(256 + 144) = √400 = 20 km."
+      },
+      {
+        id: 7,
+        category: "Rangka Kuda-Kuda Atap Rumah",
+        question: "Pak Made membuat rangka kuda-kuda atap rumah berbentuk segitiga sama kaki. Lebar bentangan rumah adalah 16 meter (sehingga jarak dari tepi ke tiang tengah adalah 8 meter). Jika tinggi tiang tengah kuda-kuda adalah 6 meter, berapakah panjang kasau (sisi miring atap) dari puncak ke tepi dinding?",
+        options: [
+          { key: "A", text: "9 meter", isCorrect: false },
+          { key: "B", text: "10 meter", isCorrect: true },
+          { key: "C", text: "12 meter", isCorrect: false },
+          { key: "D", text: "14 meter", isCorrect: false }
+        ],
+        explanation: "Setengah bentangan rumah = 8 m (alas) dan tinggi tiang = 6 m (tegak). Sisi miring kasau = √(8² + 6²) = √(64 + 36) = √100 = 10 meter."
+      },
+      {
+        id: 8,
+        category: "Lintasan Lapangan Olahraga",
+        question: "Ani berlari menyeberangi lapangan sepak bola berbentuk persegi panjang secara diagonal dari satu sudut ke sudut yang berseberangan. Jika lapangan tersebut memiliki panjang 120 meter dan lebar 50 meter, berapa jarak yang ditempuh Ani?",
+        options: [
+          { key: "A", text: "110 meter", isCorrect: false },
+          { key: "B", text: "125 meter", isCorrect: false },
+          { key: "C", text: "130 meter", isCorrect: true },
+          { key: "D", text: "170 meter", isCorrect: false }
+        ],
+        explanation: "Lintasan diagonal membagi lapangan persegi panjang menjadi segitiga siku-siku. Jarak diagonal = √(120² + 50²) = √(14400 + 2500) = √16900 = 130 meter."
+      },
+      {
+        id: 9,
+        category: "Jembatan Penyeberangan Gedung",
+        question: "Dua gedung sekolah dihubungkan oleh jembatan penyeberangan di lantai dua. Lantai jembatan pada Gedung I berada pada ketinggian 15 meter, sedangkan pada Gedung II berada pada ketinggian 20 meter (selisih tinggi 5 meter). Jika jarak mendatar antar gedung adalah 12 meter, berapakah panjang jembatan miring tersebut?",
+        options: [
+          { key: "A", text: "13 meter", isCorrect: true },
+          { key: "B", text: "14 meter", isCorrect: false },
+          { key: "C", text: "15 meter", isCorrect: false },
+          { key: "D", text: "17 meter", isCorrect: false }
+        ],
+        explanation: "Selisih tinggi gedung = 20 m - 15 m = 5 m (sisi tegak). Jarak mendatar = 12 m (sisi alas). Panjang jembatan miring = √(12² + 5²) = √(144 + 25) = √169 = 13 meter."
+      },
+      {
+        id: 10,
+        category: "Pohon Tumbang Terkena Angin",
+        question: "Sebuah pohon kelapa setinggi 25 meter patah akibat angin kencang. Ujung puncak pohon yang patah menyentuh tanah pada jarak 15 meter dari pangkal pohon, sedangkan bagian bawah pohon tetap berdiri tegak. Berapakah tinggi sisa pohon yang masih berdiri tegak dari tanah?",
+        options: [
+          { key: "A", text: "8 meter", isCorrect: true },
+          { key: "B", text: "10 meter", isCorrect: false },
+          { key: "C", text: "12 meter", isCorrect: false },
+          { key: "D", text: "15 meter", isCorrect: false }
+        ],
+        explanation: "Misal tinggi sisa pohon berdiri = x meter. Maka bagian patah yang miring = (25 - x) meter. Berdasarkan Pythagoras: x² + 15² = (25 - x)²  ⇒  x² + 225 = 625 - 50x + x²  ⇒  50x = 400  ⇒  x = 8 meter. (Bagian miring = 17 m, dan 8² + 15² = 17² = 289)."
+      }
+    ];
+
+    // State Aplikasi
+    let currentQuestionIndex = 0;
+    let userAnswers = new Array(quizData.length).fill(null);
+
+    // DOM Elements
+    const quizView = document.getElementById('quiz-view');
+    const resultView = document.getElementById('result-view');
+    const currentQNum = document.getElementById('current-q-num');
+    const progressBar = document.getElementById('progress-bar');
+    const answeredCount = document.getElementById('answered-count');
+    const qCategory = document.getElementById('q-category');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const paletteContainer = document.getElementById('question-palette');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    // Inisialisasi
+    document.addEventListener('DOMContentLoaded', () => {
+      renderPalette();
+      loadQuestion();
+    });
+
+    // Render Palet Nomor Soal
+    function renderPalette() {
+      paletteContainer.innerHTML = '';
+      quizData.forEach((q, idx) => {
+        const btn = document.createElement('button');
+        btn.innerText = idx + 1;
+        btn.id = `palette-btn-${idx}`;
+        btn.onclick = () => jumpToQuestion(idx);
+        btn.className = `h-10 rounded-lg font-bold text-sm transition border ${getPaletteStyle(idx)}`;
+        paletteContainer.appendChild(btn);
+      });
+    }
+
+    function getPaletteStyle(idx) {
+      if (idx === currentQuestionIndex) {
+        return 'bg-teal-500 text-white border-teal-600 ring-2 ring-teal-300';
+      } else if (userAnswers[idx] !== null) {
+        return 'bg-emerald-500 text-white border-emerald-600';
+      } else {
+        return 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200';
+      }
+    }
+
+    // Load Soal Aktif
+    function loadQuestion() {
+      const q = quizData[currentQuestionIndex];
+      
+      // Update UI Header Soal
+      currentQNum.innerText = currentQuestionIndex + 1;
+      qCategory.innerText = q.category;
+      questionText.innerText = q.question;
+
+      // Progress & Counters
+      const progressPercent = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+      
+      const countAnswered = userAnswers.filter(a => a !== null).length;
+      answeredCount.innerText = countAnswered;
+
+      // Render Options
+      optionsContainer.innerHTML = '';
+      q.options.forEach((opt) => {
+        const isSelected = userAnswers[currentQuestionIndex] === opt.key;
+        
+        const optionBtn = document.createElement('button');
+        optionBtn.onclick = () => selectOption(opt.key);
+        optionBtn.className = `w-full text-left p-4 rounded-xl font-medium transition border flex items-start gap-3.5 ${
+          isSelected 
+            ? 'bg-teal-50 border-teal-500 text-teal-950 ring-2 ring-teal-400/40 shadow-sm' 
+            : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700 hover:border-slate-300'
+        }`;
+
+        optionBtn.innerHTML = `
+          <span class="w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center shrink-0 transition ${
+            isSelected ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-600'
+          }">${opt.key}</span>
+          <span class="text-sm leading-relaxed pt-0.5">${opt.text}</span>
+        `;
+        optionsContainer.appendChild(optionBtn);
+      });
+
+      // Update Nav Buttons
+      prevBtn.disabled = currentQuestionIndex === 0;
+      prevBtn.classList.toggle('opacity-50', currentQuestionIndex === 0);
+      prevBtn.classList.toggle('cursor-not-allowed', currentQuestionIndex === 0);
+
+      if (currentQuestionIndex === quizData.length - 1) {
+        nextBtn.innerHTML = `Selesai <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+        nextBtn.classList.replace('bg-teal-600', 'bg-emerald-600');
+        nextBtn.classList.replace('hover:bg-teal-700', 'hover:bg-emerald-700');
+      } else {
+        nextBtn.innerHTML = `Berikutnya <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>`;
+        nextBtn.classList.replace('bg-emerald-600', 'bg-teal-600');
+        nextBtn.classList.replace('hover:bg-emerald-700', 'hover:bg-teal-700');
+      }
+
+      renderPalette();
+    }
+
+    // Event Handler Pilih Jawaban
+    function selectOption(key) {
+      userAnswers[currentQuestionIndex] = key;
+      loadQuestion();
+    }
+
+    // Navigasi
+    function nextQuestion() {
+      if (currentQuestionIndex < quizData.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        confirmSubmit();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function jumpToQuestion(idx) {
+      currentQuestionIndex = idx;
+      loadQuestion();
+    }
+
+    // Konfirmasi & Selesai Kuis
+    function confirmSubmit() {
+      const unanswered = userAnswers.filter(a => a === null).length;
+      let msg = "Apakah Anda yakin ingin menyelesaikan kuis ini?";
+      if (unanswered > 0) {
+        msg = `Masih ada ${unanswered} soal yang belum dijawab. Yakin ingin mengirimkan jawaban sekarang?`;
+      }
+      
+      if (confirm(msg)) {
+        calculateResult();
+      }
+    }
+
+    // Hitung Skor & Tampilkan Hasil
+    function calculateResult() {
+      let correct = 0;
+      quizData.forEach((q, idx) => {
+        const selectedKey = userAnswers[idx];
+        const correctOpt = q.options.find(o => o.isCorrect);
+        if (selectedKey === correctOpt.key) {
+          correct++;
+        }
+      });
+
+      const wrong = quizData.length - correct;
+      const score = Math.round((correct / quizData.length) * 100);
+      const accuracy = Math.round((correct / quizData.length) * 100);
+
+      // DOM Updates
+      document.getElementById('score-val').innerText = score;
+      document.getElementById('correct-count').innerText = correct;
+      document.getElementById('wrong-count').innerText = wrong;
+      document.getElementById('accuracy-rate').innerText = `${accuracy}%`;
+
+      // Feedback Text & Badges
+      const feedbackText = document.getElementById('feedback-text');
+      const scoreBadge = document.getElementById('score-badge');
+
+      if (score >= 80) {
+        scoreBadge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase bg-emerald-100 text-emerald-800";
+        scoreBadge.innerText = "Sangat Baik / Hebat!";
+        feedbackText.innerText = "Luar biasa! Anda sangat menguasai penerapan Teorema Pythagoras dalam situasi nyata kehidupan sehari-hari.";
+      } else if (score >= 60) {
+        scoreBadge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase bg-amber-100 text-amber-800";
+        scoreBadge.innerText = "Cukup Baik";
+        feedbackText.innerText = "Hasil yang baik! Pelajari kembali beberapa soal cerita di bawah ini untuk memperkuat konsep segitiga siku-siku.";
+      } else {
+        scoreBadge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase bg-rose-100 text-rose-800";
+        scoreBadge.innerText = "Perlu Belajar Lagi";
+        feedbackText.innerText = "Jangan berkecil hati! Mari pelajari langkah-langkah penyelesaian rinci pada tiap soal di bagian pembahasan.";
+      }
+
+      // Render Review
+      renderReviewCards();
+
+      // Switch View
+      quizView.classList.add('hidden');
+      resultView.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Render Kartu Pembahasan
+    function renderReviewCards() {
+      const container = document.getElementById('review-cards-container');
+      container.innerHTML = '';
+
+      quizData.forEach((q, idx) => {
+        const userChoiceKey = userAnswers[idx];
+        const correctOption = q.options.find(o => o.isCorrect);
+        const isUserCorrect = userChoiceKey === correctOption.key;
+
+        const card = document.createElement('div');
+        card.className = `p-5 sm:p-6 rounded-2xl border bg-white shadow-sm space-y-3 ${
+          isUserCorrect ? 'border-emerald-200 bg-emerald-50/20' : 'border-rose-200 bg-rose-50/20'
+        }`;
+
+        let optionsListHTML = '';
+        q.options.forEach(opt => {
+          let style = "text-slate-600 bg-slate-50 border-slate-200";
+          if (opt.isCorrect) {
+            style = "text-emerald-800 bg-emerald-100 border-emerald-300 font-semibold";
+          } else if (userChoiceKey === opt.key && !opt.isCorrect) {
+            style = "text-rose-800 bg-rose-100 border-rose-300 font-semibold";
+          }
+
+          optionsListHTML += `
+            <div class="p-2.5 rounded-lg border text-xs sm:text-sm flex items-center justify-between ${style}">
+              <span><strong>${opt.key}.</strong> ${opt.text}</span>
+              ${opt.isCorrect ? '<span class="text-xs bg-emerald-600 text-white px-2 py-0.5 rounded">Kunci Jawaban</span>' : ''}
+              ${userChoiceKey === opt.key && !opt.isCorrect ? '<span class="text-xs bg-rose-600 text-white px-2 py-0.5 rounded">Jawaban Anda</span>' : ''}
+            </div>
+          `;
+        });
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <span class="text-xs font-bold px-2.5 py-1 rounded-md ${
+              isUserCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+            }">
+              Soal ${idx + 1} • ${isUserCorrect ? 'BENAR' : 'SALAH / TIDAK DIJAWAB'}
+            </span>
+            <span class="text-xs font-semibold text-slate-400 uppercase">${q.category}</span>
+          </div>
+
+          <p class="font-bold text-slate-800 text-base">${q.question}</p>
+
+          <div class="grid grid-cols-1 gap-2 pt-1">
+            ${optionsListHTML}
+          </div>
+
+          <div class="p-3.5 bg-cyan-50 rounded-xl border border-cyan-200 text-xs sm:text-sm text-cyan-950 mt-2">
+            <strong>📐 Pembahasan Langkah Matematika:</strong><br>${q.explanation}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // Reset Kuis
+    function restartQuiz() {
+      currentQuestionIndex = 0;
+      userAnswers = new Array(quizData.length).fill(null);
+      resultView.classList.add('hidden');
+      quizView.classList.remove('hidden');
+      loadQuestion();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToReview() {
+      document.getElementById('review-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Toggle Layar Penuh (PID Friendly)
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          alert(`Gagal masuk mode layar penuh: ${err.message}`);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+  </script>
+</body>
+</html>
